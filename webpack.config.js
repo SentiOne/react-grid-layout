@@ -8,7 +8,7 @@ module.exports = {
   },
   output: {
     path: __dirname + "/dist",
-    filename: "[name].min.js",
+    filename: "[name].js",
     libraryTarget: "umd",
     library: "ReactGridLayout"
   },
@@ -43,7 +43,7 @@ module.exports = {
     new webpack.optimize.OccurenceOrderPlugin(),
     new webpack.optimize.DedupePlugin(),
     // Compress, but don't print warnings to console
-    new webpack.optimize.UglifyJsPlugin({compress: {warnings: false}})
+    //new webpack.optimize.UglifyJsPlugin({compress: {warnings: false}})
   ],
   resolve: {
     extensions: ["", ".webpack.js", ".web.js", ".js", ".jsx"]

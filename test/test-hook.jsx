@@ -14,9 +14,14 @@ module.exports = function(Layout) {
     };
 
     stringifyLayout() {
-      return this.state.layout.map(function(l) {
-        return <div className="layoutItem" key={l.i}><b>{l.i}</b>: [{l.x}, {l.y}, {l.w}, {l.h}]</div>;
-      });
+      return this.state.layout.map((l, page) =>
+        l.constructor === Array ?
+	        <div>
+		        <h3>{page}</h3>
+		        {_.map(l, i => <div className="layoutItem" key={i.i}><b>{i.i}</b>: [{i.x}, {i.y}, {i.w}, {i.h}]</div>)}
+	        </div>
+        : <div className="layoutItem" key={l.i}><b>{l.i}</b>: [{l.x}, {l.y}, {l.w}, {l.h}]</div>
+      );
     }
 
     render(){

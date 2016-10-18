@@ -6,3 +6,4 @@ build/
 .idea
 .jshintignore
 .jshintrc
+react-grid-layout.iml

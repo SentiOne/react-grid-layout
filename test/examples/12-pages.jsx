@@ -2,9 +2,7 @@
 var React = require('react');
 var PureRenderMixin = require('react/lib/ReactComponentWithPureRenderMixin');
 var _ = require('lodash');
-var WidthProvider = require('react-grid-layout').WidthProvider;
 var ReactGridLayout = require('react-grid-layout');
-ReactGridLayout = WidthProvider(ReactGridLayout);
 
 
 var BasicLayout = React.createClass({
@@ -17,10 +15,10 @@ var BasicLayout = React.createClass({
 	getDefaultProps() {
 		return {
 			className: "layout",
-			items: 20,
-			rowHeight: 30,
-			cols: 4,
-			pages: 3
+			items: 10,
+			rowHeight: 50,
+			maxRows: 16,
+			cols: 12,
 		};
 	},
 
@@ -52,8 +50,8 @@ var BasicLayout = React.createClass({
 	render() {
 		return (
 			<ReactGridLayout layout={this.state.layout} onLayoutChange={this.onLayoutChange}
-				pages={this.state.pages}
-				{...this.props}>
+				pages={2}
+				{...this.props} width={800}>
 				{this.generateDOM()}
 			</ReactGridLayout>
 		);

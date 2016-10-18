@@ -24,6 +24,7 @@ export default class GridItem extends React.Component {
     // General grid attributes
     cols: PropTypes.number.isRequired,
     pages: PropTypes.number.isRequired,
+    pageMargin: PropTypes.number.isRequired,
     containerWidth: PropTypes.number.isRequired,
     rowHeight: PropTypes.number.isRequired,
     margin: PropTypes.array.isRequired,
@@ -105,9 +106,9 @@ export default class GridItem extends React.Component {
 
   // Helper for generating column width
   calcColWidth(): number {
-    const {margin, pages, containerPadding, containerWidth, cols} = this.props;
+    const {margin, pageMargin, pages, containerPadding, containerWidth, cols} = this.props;
 
-    return (containerWidth - (margin[0] * (cols * pages - 1)) - (containerPadding[0] * 2) - (pages - 1) * 20) / (cols * pages);
+    return (containerWidth - (margin[0] * (cols - 1)) - (containerPadding[0] * 2)) / cols;
   }
 
   /**
@@ -191,7 +192,6 @@ export default class GridItem extends React.Component {
     // w = (width + margin) / (colWidth + margin)
     let w = Math.round((width + margin[0]) / (colWidth + margin[0]));
     let h = Math.round((height + margin[1]) / (rowHeight + margin[1]));
-
     // Capping
     w = Math.max(Math.min(w, cols * pages - x), 0);
     h = Math.max(Math.min(h, maxRows - y), 0);
@@ -255,11 +255,10 @@ export default class GridItem extends React.Component {
    * @return {Element}          Child wrapped in Resizable.
    */
   mixinResizable(child: React.Element<any>, position: Position): React.Element<any> {
-    const {cols, x, minW, minH, maxW, maxH} = this.props;
+    const {cols, pages, x, minW, minH, maxW, maxH} = this.props;
 
     // This is the max possible width - doesn't go to infinity because of the width of the window
-    const maxWidth = this.calcPosition(0, 0, cols - x, 0).width;
-
+    const maxWidth = this.calcPosition(0, 0, (Math.floor(x / cols) + 1) * cols - x, 0).width;
     // Calculate min/max constraints using our min & maxes
     const mins = this.calcPosition(0, 0, minW, minH);
     const maxes = this.calcPosition(0, 0, maxW, maxH);
@@ -297,9 +296,10 @@ export default class GridItem extends React.Component {
       switch (handlerName) {
         case 'onDragStart':
           // ToDo this wont work on nested parents
+          const parentScroll = node.offsetParent.scrollLeft;
           const parentRect = node.offsetParent.getBoundingClientRect();
           const clientRect = node.getBoundingClientRect();
-          newPosition.left = clientRect.left - parentRect.left;
+          newPosition.left = clientRect.left - parentRect.left + parentScroll;
           newPosition.top = clientRect.top - parentRect.top;
           this.setState({dragging: newPosition});
           break;
@@ -341,8 +341,6 @@ export default class GridItem extends React.Component {
       // Get new XY
       let {w, h} = this.calcWH(size);
 
-      // Cap w at numCols
-      w = Math.min(w, cols - x);
       // Ensure w is at least 1
       w = Math.max(w, 1);
 
@@ -357,7 +355,7 @@ export default class GridItem extends React.Component {
   }
 
   render(): React.Element<any> {
-    const {x, y, w, h, isDraggable, isResizable, useCSSTransforms} = this.props;
+    const {x, y, w, h, isDraggable, isResizable, useCSSTransforms, maxRows} = this.props;
 
     const pos = this.calcPosition(x, y, w, h, this.state);
     const child = React.Children.only(this.props.children);
@@ -374,6 +372,7 @@ export default class GridItem extends React.Component {
         this.state.resizing ? 'resizing' : '',
         this.state.dragging ? 'react-draggable-dragging' : '',
 	    (x !== 0 && (x % this.props.cols) === 0) ? 'first-col': '',
+	    (y + h >= maxRows) ? 'react-grid-overflow': '',
 	    useCSSTransforms ? 'cssTransforms' : ''
       ].join(' '),
       // We can set the width and height on the child, but unfortunately we can't set the position.

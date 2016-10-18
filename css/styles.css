@@ -1,11 +1,20 @@
 .react-grid-layout {
   position: relative;
   transition: height 200ms ease;
+  padding-bottom: 10px;
+  overflow-x: scroll;
+  overflow-y: auto;
 }
 .react-grid-item {
   transition: all 200ms ease;
   transition-property: left, top;
 }
+
+.react-grid-page {
+	height: 100%;
+	position: absolute;
+}
+
 .react-grid-item.cssTransforms {
   transition-property: transform;
 }
@@ -18,7 +27,7 @@
   z-index: 3;
 }
 
-.react-grid-item.react-grid-placeholder {
+.react-grid-item.react-grid-placeholder, .react-grid-item.react-grid-overflow{
   background: red;
   opacity: 0.2;
   transition-duration: 100ms;

@@ -105,7 +105,8 @@ export default class ReactGridLayout extends React.Component {
     onResize: PropTypes.func,
     // Calls when resize is complete.
     onResizeStop: PropTypes.func,
-
+    // Calls when item is clicked (not dragged)
+    onItemClick: PropTypes.func,
     //
     // Other validations
     //
@@ -143,7 +144,8 @@ export default class ReactGridLayout extends React.Component {
     onDragStop: noop,
     onResizeStart: noop,
     onResize: noop,
-    onResizeStop: noop
+    onResizeStop: noop,
+    onItemClick: noop
   };
 
   state: State = {
@@ -158,7 +160,7 @@ export default class ReactGridLayout extends React.Component {
 
   constructor(props: $PropertyType<ReactGridLayout, 'props'>, context: any): void {
     super(props, context);
-    autoBindHandlers(this, ['onDragStart', 'onDrag', 'onDragStop', 'onResizeStart', 'onResize', 'onResizeStop']);
+    autoBindHandlers(this, ['onDragStart', 'onDrag', 'onDragStop', 'onResizeStart', 'onResize', 'onResizeStop', 'onItemClick']);
   }
 
   componentDidMount() {
@@ -345,6 +347,17 @@ export default class ReactGridLayout extends React.Component {
     this.onLayoutMaybeChanged(newLayout, oldLayout);
   }
 
+	/**
+	 *
+	 * @param i
+	 * @param e
+	 */
+	onItemClick(i:string, e: Event) {
+		const {layout} = this.state;
+		var l = getLayoutItem(layout, i);
+		this.props.onItemClick(l);
+	}
+
   /**
    * Create a placeholder object.
    * @return {Element} Placeholder div.
@@ -411,6 +424,7 @@ export default class ReactGridLayout extends React.Component {
         onResizeStart={this.onResizeStart}
         onResize={this.onResize}
         onResizeStop={this.onResizeStop}
+        onItemClick={this.onItemClick}
         isDraggable={draggable}
         isResizable={resizable}
         useCSSTransforms={useCSSTransforms && mounted}
@@ -436,7 +450,6 @@ export default class ReactGridLayout extends React.Component {
 
   render() {
     const {className, style} = this.props;
-
     const mergedClassName = `react-grid-layout ${className}`;
     const mergedStyle = {
       height: this.containerHeight(),

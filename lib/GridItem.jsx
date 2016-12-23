@@ -71,6 +71,7 @@ export default class GridItem extends React.Component {
     onResizeStop: PropTypes.func,
     onResizeStart: PropTypes.func,
     onResize: PropTypes.func,
+    onItemClick: PropTypes.func,
     changeWH: PropTypes.func,
 
     // Flags
@@ -313,6 +314,10 @@ export default class GridItem extends React.Component {
           newPosition.left = this.state.dragging.left;
           newPosition.top = this.state.dragging.top;
           this.setState({dragging: null});
+          var oldPosition = this.calcPosition(this.props.x, this.props.y, this.props.w, this.props.h);
+          if (this.props.onItemClick && oldPosition.left === newPosition.left && oldPosition.top === newPosition.top) {
+	          this.props.onItemClick(this.props.i, e);
+          }
           break;
         default:
           throw new Error('onDragHandler called with unrecognized handlerName: ' + handlerName);
